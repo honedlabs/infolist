@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Honed\Infolist\Entries;
+
+class DateEntry extends BaseEntry
+{
+    use Concerns\CanBeDateTime;
+
+    /**
+     * Provide the instance with any necessary setup.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->date();
+    }
+
+    /**
+     * Format the value of the entry.
+     *
+     * @param  \Carbon\CarbonInterface|string|int|float|null  $value
+     * @return string|null
+     */
+    public function format(mixed $value): mixed
+    {
+        return $this->formatDate($value);
+    }
+}
