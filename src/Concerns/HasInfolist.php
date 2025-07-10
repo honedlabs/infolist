@@ -21,21 +21,11 @@ trait HasInfolist
     protected $list;
 
     /**
-     * Get the infolist for the model.
-     *
-     * @return TList
-     */
-    public function toList()
-    {
-        return $this->infolist();
-    }
-
-    /**
      * Get the list instance for the model.
      *
      * @return TList
      */
-    public function infolist()
+    public function infolist(): Infolist
     {
         return $this->newInfolist()
             ?? Infolist::infolistForModel($this);
@@ -46,7 +36,7 @@ trait HasInfolist
      *
      * @return class-string<TList>|null
      */
-    protected static function getUseInfolistAttribute()
+    protected static function getUseInfolistAttribute(): ?string
     {
         $attributes = (new ReflectionClass(static::class))
             ->getAttributes(UseInfolist::class);
@@ -65,7 +55,7 @@ trait HasInfolist
      *
      * @return TList|null
      */
-    protected function newInfolist()
+    protected function newInfolist(): ?Infolist
     {
         if (isset($this->list)) {
             return $this->list::make()->for($this);
