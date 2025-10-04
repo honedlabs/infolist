@@ -9,7 +9,7 @@ use Closure;
 use Honed\Infolist\Formatters\MappedFormatter;
 
 /**
- * @extends Entry<int|string|\BackedEnum, mixed>
+ * @extends Entry<int|string|BackedEnum, mixed>
  *
  * @method $this mapping(array<array-key, mixed>|\Closure(int|string|\BackedEnum|null):mixed $value) Set the mapping to use.
  * @method array<array-key, mixed>|Closure(int|string|BackedEnum|null):mixed getMapping() Get the mapping to use.
