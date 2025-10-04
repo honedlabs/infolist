@@ -4,10 +4,18 @@ declare(strict_types=1);
 
 namespace Honed\Infolist\Entries;
 
-class ImageEntry extends BaseEntry
-{
-    use Concerns\CanBeImage;
+use Honed\Infolist\Formatters\ImageFormatter;
 
+/**
+ * @extends Entry<string, string>
+ *
+ * @method $this disk(string $value = 's3') Set the disk to be used to retrieve the image.
+ * @method string|null getDisk() Get the disk to be used to retrieve the image.
+ * @method $this expiresIn(int $minutes) Set the expiry time for the image URL in minutes.
+ * @method int|null getExpiry() Get the expiry time for the image URL in minutes.
+ */
+class ImageEntry extends Entry
+{
     /**
      * Provide the instance with any necessary setup.
      */
@@ -15,17 +23,8 @@ class ImageEntry extends BaseEntry
     {
         parent::setUp();
 
-        $this->type(self::IMAGE);
-    }
+        $this->type('image');
 
-    /**
-     * Format the value of the entry.
-     *
-     * @param  string|null  $value
-     * @return string|null
-     */
-    public function format($value)
-    {
-        return is_null($value) ? null : $this->formatImage($value);
+        $this->formatter(ImageFormatter::class);
     }
 }

@@ -7,7 +7,8 @@ namespace Honed\Infolist;
 use Closure;
 use Honed\Core\Concerns\HasRecord;
 use Honed\Core\Primitive;
-use Honed\Infolist\Entries\BaseEntry;
+use Honed\Infolist\Concerns\HasEntryables;
+use Honed\Infolist\Contracts\Entryable;
 use Illuminate\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Database\Eloquent\Model;
@@ -20,7 +21,7 @@ use Throwable;
  */
 class Infolist extends Primitive
 {
-    use Concerns\HasEntries;
+    use HasEntryables;
     use HasRecord;
 
     /**
@@ -38,11 +39,11 @@ class Infolist extends Primitive
     protected static $infolistResolver;
 
     /**
-     * The resource of the infolist.
+     * The identifier to use for evaluation.
      *
-     * @var array<string, mixed>|Model
+     * @var string
      */
-    protected $resource;
+    protected $evaluationIdentifier = 'infolist';
 
     /**
      * Create a new infolist instance.
@@ -50,19 +51,16 @@ class Infolist extends Primitive
      * @param  array<string, mixed>|Model|null  $resource
      * @return static
      */
-    public static function make($resource = null)
+    public static function make(array|Model|null $resource = null)
     {
         return resolve(static::class)
-            ->when($resource, fn ($infolist, $resource) => $infolist->for($resource));
+            ->when($resource, fn (self $infolist, array|Model $resource) => $infolist->record($resource));
     }
 
     /**
      * Get a new infolist instance for the given model name.
-     *
-     * @param  Model  $model
-     * @return Infolist
      */
-    public static function infolistForModel($model)
+    public static function infolistForModel(Model $model): self
     {
         $infolist = static::resolveInfolistName($model::class);
 
@@ -75,7 +73,7 @@ class Infolist extends Primitive
      * @param  class-string<Model>  $className
      * @return class-string<Infolist>
      */
-    public static function resolveInfolistName($className)
+    public static function resolveInfolistName(string $className): string
     {
         $resolver = static::$infolistResolver ?? function (string $className): string {
             $appNamespace = static::appNamespace();
@@ -93,11 +91,8 @@ class Infolist extends Primitive
 
     /**
      * Specify the default namespace that contains the application's infolists.
-     *
-     * @param  string  $namespace
-     * @return void
      */
-    public static function useNamespace($namespace)
+    public static function useNamespace(string $namespace): void
     {
         static::$namespace = $namespace;
     }
@@ -106,9 +101,8 @@ class Infolist extends Primitive
      * Specify the callback that should be invoked to guess the name of a infolist for a model.
      *
      * @param  Closure(class-string<Model>):class-string<Infolist>  $callback
-     * @return void
      */
-    public static function guessInfolistsUsing($callback)
+    public static function guessInfolistsUsing(Closure $callback): void
     {
         static::$infolistResolver = $callback;
     }
@@ -123,22 +117,9 @@ class Infolist extends Primitive
     }
 
     /**
-     * Set the resource of the infolist.
-     *
-     * @param  array<string, mixed>|Model  $resource
-     * @return $this
+     * Get the application namespace for the application
      */
-    public function for($resource)
-    {
-        return $this->record($resource);
-    }
-
-    /**
-     * Get the application namespace for the application.
-     *
-     * @return string
-     */
-    protected static function appNamespace()
+    protected static function appNamespace(): string
     {
         try {
             return Container::getInstance()
@@ -169,9 +150,7 @@ class Infolist extends Primitive
         }
 
         return array_map(
-            static fn (BaseEntry $entry) => $entry
-                ->record($record)
-                ->toArray(),
+            static fn (Entryable $primitive) => $primitive->record($record)->entry(),
             $this->getEntries()
         );
     }
