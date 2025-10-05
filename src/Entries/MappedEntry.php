@@ -6,10 +6,11 @@ namespace Honed\Infolist\Entries;
 
 use BackedEnum;
 use Closure;
+use Honed\Infolist\Contracts\Formatter;
 use Honed\Infolist\Formatters\MappedFormatter;
 
 /**
- * @extends Entry<int|string|BackedEnum, mixed>
+ * @extends Entry<int|string|\BackedEnum, mixed>
  *
  * @method $this mapping(array<array-key, mixed>|\Closure(int|string|\BackedEnum|null):mixed $value) Set the mapping to use.
  * @method array<array-key, mixed>|Closure(int|string|BackedEnum|null):mixed getMapping() Get the mapping to use.
@@ -19,12 +20,12 @@ use Honed\Infolist\Formatters\MappedFormatter;
 class MappedEntry extends Entry
 {
     /**
-     * Provide the instance with any necessary setup.
+     * Get the default formatter.
+     *
+     * @return Formatter<int|string|BackedEnum, mixed>
      */
-    protected function setUp(): void
+    public function defaultFormatter(): Formatter
     {
-        parent::setUp();
-
-        $this->formatter(MappedFormatter::class);
+        return new MappedFormatter();
     }
 }

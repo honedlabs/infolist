@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Honed\Infolist\Entries;
 
 use BackedEnum;
+use Honed\Infolist\Contracts\Formatter;
 use Honed\Infolist\Formatters\EnumFormatter;
 
 /**
- * @extends Entry<int|string|BackedEnum|null, BackedEnum|null>
+ * @extends Entry<int|string|\BackedEnum|null, \BackedEnum|null>
  *
  * @method $this enum(string $value) Set the backing enum for the entry.
  * @method string|null getEnum() Get the backing enum for the entry.
@@ -16,12 +17,12 @@ use Honed\Infolist\Formatters\EnumFormatter;
 class EnumEntry extends Entry
 {
     /**
-     * Provide the instance with any necessary setup.
+     * Get the default formatter.
+     *
+     * @return Formatter<int|string|BackedEnum|null, BackedEnum|null>
      */
-    protected function setUp(): void
+    public function defaultFormatter(): Formatter
     {
-        parent::setUp();
-
-        $this->formatter(EnumFormatter::class);
+        return new EnumFormatter();
     }
 }

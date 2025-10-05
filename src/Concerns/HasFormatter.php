@@ -41,17 +41,27 @@ trait HasFormatter
      */
     public function getFormatter(): Formatter
     {
-        return $this->formatter ??= new DefaultFormatter();
+        return $this->formatter ??= $this->defaultFormatter();
     }
 
     /**
      * Format the value.
      *
-     * @param  TValue|null  $value
-     * @return TReturn|null
+     * @param  TValue  $value
+     * @return TReturn
      */
     public function format(mixed $value): mixed
     {
         return $this->getFormatter()->format($value);
+    }
+
+    /**
+     * Get the default formatter.
+     *
+     * @return Formatter<TValue, TReturn>
+     */
+    public function defaultFormatter(): Formatter
+    {
+        return new DefaultFormatter();
     }
 }
